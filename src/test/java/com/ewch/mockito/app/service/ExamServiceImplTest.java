@@ -13,9 +13,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ExamServiceImplTest {
@@ -74,6 +76,39 @@ class ExamServiceImplTest {
         assertAll(
                 () -> assertEquals(expectedQuestionsCount, actual.getQuestions().size()),
                 () -> assertTrue(actual.getQuestions().contains(expectedQuestion))
+        );
+    }
+
+    @Test
+    void findExamByNameWithQuestionsVerifyTest() {
+        Exam exam = new Exam(5L, "Math");
+        int expectedQuestionsCount = 5;
+        String expectedQuestion = "Arithmetic";
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+
+        assertAll(
+                () -> assertEquals(expectedQuestionsCount, actual.getQuestions().size()),
+                () -> assertTrue(actual.getQuestions().contains(expectedQuestion)),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(anyLong())
+        );
+    }
+
+    @Test
+    void findExamByNameWithQuestionsListEmptyVerifyTest() {
+        Exam exam = new Exam(5L, "Math2");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+
+        assertAll(
+                () -> assertNull(actual),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(anyLong())
         );
     }
 }
