@@ -57,6 +57,13 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 ### 8. Exception Handling
 - Mocking and verifying exception flows in service methods.
 
+### 9. Injecting Dependencies
+- Allowing dependency injection by annotations into tested class
+  1. Using `MockitoAnnotations.openMocks(this);` method in setUp method (`@BeforeEach`).
+  2. Annotating Test class using `@ExtendWith(MockitoExtension.class)`
+- Using `@Mock`: Annotation for every mocked dependency to be injected in tested class.
+- Using `@InjectMocks`: Annotation for tested class that instantiates it and inject mocks. 
+
 ## Running the Tests
 
 To execute the tests, use the following Maven command:

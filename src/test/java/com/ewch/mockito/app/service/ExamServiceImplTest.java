@@ -5,6 +5,11 @@ import com.ewch.mockito.app.repository.ExamRepository;
 import com.ewch.mockito.app.repository.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,17 +25,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
 
-    private ExamService examService;
+    @InjectMocks
+    private ExamServiceImpl examService;
+
+    @Mock
     private ExamRepository examRepository;
+
+    @Mock
     private QuestionRepository questionRepository;
 
     @BeforeEach
     void setUp() {
-        this.examRepository = mock(ExamRepository.class);
+        //MockitoAnnotations.openMocks(this);
+        /*this.examRepository = mock(ExamRepository.class);
         this.questionRepository = mock(QuestionRepository.class);
-        this.examService = new ExamServiceImpl(examRepository, questionRepository);
+        this.examService = new ExamServiceImpl(examRepository, questionRepository);*/
     }
 
     @Test
