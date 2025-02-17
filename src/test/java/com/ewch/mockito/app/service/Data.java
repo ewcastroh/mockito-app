@@ -12,4 +12,6 @@ public class Data {
     );
 
     public static final List<String> QUESTION_LIST = List.of("Arithmetic", "Derivatives", "Integrals", "Trigonometry", "Geometry");
+
+    public static final Exam EXAM = new Exam(8L, "Physics");
 }

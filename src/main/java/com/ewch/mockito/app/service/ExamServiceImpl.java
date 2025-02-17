@@ -34,4 +34,12 @@ public class ExamServiceImpl implements ExamService {
         });
         return examOptional.orElse(null);
     }
+
+    @Override
+    public Exam save(Exam exam) {
+        if (!exam.getQuestions().isEmpty()) {
+            questionRepository.save(exam.getQuestions());
+        }
+        return examRepository.save(exam);
+    }
 }
