@@ -56,6 +56,9 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 
 ### 8. Exception Handling
 - Mocking and verifying exception flows in service methods.
+- Using `assertThrows()`: Validating exceptions in JUnit 5 tests.
+- Using `doThrow().when(mock).method()`: Simulating exceptions in void methods.
+- Using `when().thenThrow()`: Simulating exceptions in method calls.
 
 ### 9. Injecting Dependencies
 - Allowing dependency injection by annotations into tested class

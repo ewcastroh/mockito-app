@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -22,10 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -170,6 +172,34 @@ class ExamServiceImplTest {
                 () -> assertEquals(expectedExam.getName(), actual.getName()),
                 () -> verify(examRepository).save(any(Exam.class)),
                 () -> verify(questionRepository).save(anyList())
+        );
+    }
+
+    @Test
+    void handleExceptionTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenThrow(IllegalArgumentException.class);
+
+        // Then
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> examService.findExamByNameWithQuestions(exam.getName()))
+        );
+    }
+
+    @Test
+    void handleExceptionWithNullMatchersTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST_WITH_IDS_NULL);
+        when(questionRepository.findQuestionsByExamId(isNull())).thenThrow(IllegalArgumentException.class);
+
+        // Then
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> examService.findExamByNameWithQuestions(exam.getName())),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(isNull())
         );
     }
 }
