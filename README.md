@@ -62,7 +62,30 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
   1. Using `MockitoAnnotations.openMocks(this);` method in setUp method (`@BeforeEach`).
   2. Annotating Test class using `@ExtendWith(MockitoExtension.class)`
 - Using `@Mock`: Annotation for every mocked dependency to be injected in tested class.
-- Using `@InjectMocks`: Annotation for tested class that instantiates it and inject mocks. 
+- Using `@InjectMocks`: Annotation for tested class that instantiates it and inject mocks.
+
+### 11. Answering Behavior
+- Using `Answer<T>`: Customizing behavior for method calls.
+- Using `doAnswer()`: Defining custom behavior for void methods.
+- Using `thenAnswer()`: Defining custom behavior for method calls.
+- Using `then()` with `thenReturn()`: Defining custom behavior for method calls.
+- Using `InvocationOnMock`: Extracting arguments from method calls.
+- Using `invocation.getArgument(index)`: Extracting specific arguments from method calls.
+- Using `invocation.getArguments()`: Extracting all arguments from method calls.
+- Using `invocation.getMock()`: Extracting the mock object from method calls.
+- Using `invocation.getMethod()`: Extracting the method from method calls.
+- Using `invocation.callRealMethod()`: Invoking the real method from a spy object.
+- Using `invocation.getMock().method()`: Invoking a method on a mock object.
+
+### 11. Capturing Arguments
+- Using `ArgumentCaptor<T>`: Captures arguments passed to a method.
+- Using `verify(mock).method(captor.capture())`: Extracts captured arguments for validation.
+- Using `captor.getAllValues()`: Retrieves all captured values.
+- Using `captor.getValue()`: Retrieves the last captured value.
+- Using `captor.getAllValues().get(index)`: Retrieves a specific captured value.
+- Using `captor.capture()`: Captures arguments for verification.
+- Using `captor.capture()` with `verify(mock).method(captor.capture())`: Captures arguments for verification.
+- Using `captor.capture()` with `verify(mock, times(n)).method(captor.capture())`: Captures arguments for verification.
 
 ## Running the Tests
 

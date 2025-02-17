@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,12 +52,15 @@ class ExamServiceImplTest {
 
     @Test
     void findExamByNameTest() {
+        // Given
         Exam expectedExam = new Exam(5L, "Math");
 
         when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
 
+        // When
         Optional<Exam> actual = examService.findExamByName("Math");
 
+        // Then
         assertAll(
                 () -> assertTrue(actual.isPresent()),
                 () -> assertEquals(expectedExam.getId(), actual.orElseThrow().getId()),
@@ -65,12 +70,15 @@ class ExamServiceImplTest {
 
     @Test
     void findExamByNameWithEmptyListTest() {
+        // Given
         List<Exam> examList = Collections.emptyList();
 
         when(examRepository.findAllExams()).thenReturn(examList);
 
+        // When
         Optional<Exam> actual = examService.findExamByName("Math");
 
+        // Then
         assertAll(
                 () -> assertFalse(actual.isPresent()),
                 () -> assertTrue(examRepository.findAllExams().isEmpty())
@@ -80,14 +88,17 @@ class ExamServiceImplTest {
 
     @Test
     void findExamByNameWithQuestionsTest() {
+        // Given
         Exam exam = new Exam(5L, "Math");
         int expectedQuestionsCount = 5;
         String expectedQuestion = "Arithmetic";
         when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
         when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
 
+        // When
         Exam actual = examService.findExamByNameWithQuestions(exam.getName());
 
+        // Then
         assertAll(
                 () -> assertEquals(expectedQuestionsCount, actual.getQuestions().size()),
                 () -> assertTrue(actual.getQuestions().contains(expectedQuestion))
@@ -96,14 +107,17 @@ class ExamServiceImplTest {
 
     @Test
     void findExamByNameWithQuestionsVerifyTest() {
+        // Given
         Exam exam = new Exam(5L, "Math");
         int expectedQuestionsCount = 5;
         String expectedQuestion = "Arithmetic";
         when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
         when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
 
+        // When
         Exam actual = examService.findExamByNameWithQuestions(exam.getName());
 
+        // Then
         assertAll(
                 () -> assertEquals(expectedQuestionsCount, actual.getQuestions().size()),
                 () -> assertTrue(actual.getQuestions().contains(expectedQuestion)),
@@ -114,12 +128,15 @@ class ExamServiceImplTest {
 
     @Test
     void findExamByNameWithQuestionsListEmptyVerifyTest() {
+        // Given
         Exam exam = new Exam(5L, "Math2");
         when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
         when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
 
+        // When
         Exam actual = examService.findExamByNameWithQuestions(exam.getName());
 
+        // Then
         assertAll(
                 () -> assertNull(actual),
                 () -> verify(examRepository).findAllExams(),
@@ -129,11 +146,24 @@ class ExamServiceImplTest {
 
     @Test
     void saveExamTest() {
+        // Given
         Exam expectedExam = new Exam(8L, "Physics");
         expectedExam.setQuestions(Data.QUESTION_LIST);
-        when(examRepository.save(any(Exam.class))).thenReturn(Data.EXAM);
+
+        when(examRepository.save(any(Exam.class))).then(new Answer<Exam>() {
+            Long sequence = 8L;
+            @Override
+            public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Exam exam = invocationOnMock.getArgument(0);
+                exam.setId(sequence++);
+                return exam;
+            }
+        });
+
+        // When
         Exam actual = examService.save(expectedExam);
 
+        // Then
         assertAll(
                 () -> assertNotNull(actual),
                 () -> assertEquals(expectedExam.getId(), actual.getId()),
