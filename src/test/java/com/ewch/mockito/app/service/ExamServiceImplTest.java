@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -200,6 +202,26 @@ class ExamServiceImplTest {
                 () -> assertThrows(IllegalArgumentException.class, () -> examService.findExamByNameWithQuestions(exam.getName())),
                 () -> verify(examRepository).findAllExams(),
                 () -> verify(questionRepository).findQuestionsByExamId(isNull())
+        );
+    }
+
+    @Test
+    void argumentMatchersTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+
+        // When
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+
+        // Then
+        assertAll(
+                () -> assertNotNull(actual),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(argThat(argument -> argument != null && argument > 0)),
+                () -> verify(questionRepository).findQuestionsByExamId(argThat(argument -> argument != null && argument.equals(5L))),
+                () -> verify(questionRepository).findQuestionsByExamId(eq(5L))
         );
     }
 }
