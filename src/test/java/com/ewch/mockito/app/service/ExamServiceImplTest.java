@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -290,6 +291,57 @@ class ExamServiceImplTest {
         doThrow(IllegalArgumentException.class).when(questionRepository).saveQuestionList(anyList());
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> examService.save(Data.EXAM))
+        );
+    }
+
+    @Test
+    void doAnswerTest() {
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        doAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+            return id == 5L ? Data.QUESTION_LIST : Collections.emptyList();
+        }).when(questionRepository).findQuestionsByExamId(anyLong());
+
+        Exam actual = examService.findExamByNameWithQuestions("Math");
+
+        assertAll(
+                () -> assertNotNull(actual),
+                () -> assertEquals(5, actual.getQuestions().size()),
+                () -> assertTrue(actual.getQuestions().contains("Arithmetic")),
+                () -> assertEquals(5L, actual.getId()),
+                () -> assertEquals("Math", actual.getName()),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(anyLong())
+        );
+    }
+
+
+    @Test
+    void saveExamUsingDoAnswerTest() {
+        // Given
+        Exam expectedExam = new Exam(8L, "Physics");
+        expectedExam.setQuestions(Data.QUESTION_LIST);
+
+        doAnswer(new Answer<Exam>() {
+            Long sequence = 8L;
+            @Override
+            public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Exam exam = invocationOnMock.getArgument(0);
+                exam.setId(sequence++);
+                return exam;
+            }
+        }).when(examRepository).save(any(Exam.class));
+
+        // When
+        Exam actual = examService.save(expectedExam);
+
+        // Then
+        assertAll(
+                () -> assertNotNull(actual),
+                () -> assertEquals(expectedExam.getId(), actual.getId()),
+                () -> assertEquals(expectedExam.getName(), actual.getName()),
+                () -> verify(examRepository).save(any(Exam.class)),
+                () -> verify(questionRepository).saveQuestionList(anyList())
         );
     }
 }
