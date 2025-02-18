@@ -194,7 +194,7 @@ class ExamServiceImplTest {
     void handleExceptionWithNullMatchersTest() {
         // Given
         Exam exam = new Exam(5L, "Math");
-        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST_WITH_IDS_NULL);
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST_WITH_NULL_IDS);
         when(questionRepository.findQuestionsByExamId(isNull())).thenThrow(IllegalArgumentException.class);
 
         // Then
@@ -223,5 +223,37 @@ class ExamServiceImplTest {
                 () -> verify(questionRepository).findQuestionsByExamId(argThat(argument -> argument != null && argument.equals(5L))),
                 () -> verify(questionRepository).findQuestionsByExamId(eq(5L))
         );
+    }
+
+    @Test
+    void argumentMatchersWithClassTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST_WITH_NEGATIVE_IDS);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+
+        // When
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+
+        // Then
+        assertAll(
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(argThat(new ArgumentMatcher()))
+        );
+    }
+
+    static class ArgumentMatcher implements org.mockito.ArgumentMatcher<Long> {
+        private Long argument;
+
+        @Override
+        public boolean matches(Long argument) {
+            this.argument = argument;
+            return argument != null && argument > 0;
+        }
+
+        @Override
+        public String toString() {
+            return "ArgumentMatcher{" + argument + "} is null or less than 0";
+        }
     }
 }

@@ -11,8 +11,12 @@ public class Data {
             new Exam(6L, "Language")
     );
 
+    public static final List<Exam> EXAM_LIST_WITH_NEGATIVE_IDS = List.of(
+            new Exam(-5L, "Math"),
+            new Exam(-6L, "Language")
+    );
 
-    public static final List<Exam> EXAM_LIST_WITH_IDS_NULL = List.of(
+    public static final List<Exam> EXAM_LIST_WITH_NULL_IDS = List.of(
             new Exam(null, "Math"),
             new Exam(null, "Language")
     );

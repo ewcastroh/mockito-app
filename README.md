@@ -41,6 +41,9 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 
 ### 4. Argument Matchers
 - Using `eq()`, `any()`, `argThat()`: Validating method arguments during verification.
+- Using `anyInt()`, `anyLong()`, `anyString()`: Matching specific argument types.
+- Using `argThat()`: Customizing argument matching with a lambda expression.
+- Using `rgumentMatcher<T>()`: Customizing argument matching with a custom matcher.
 
 ### 5. Mocking Void Methods
 - Using `doNothing().when(mock).voidMethod()`: Prevents actual execution.
