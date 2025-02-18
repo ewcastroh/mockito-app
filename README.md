@@ -84,6 +84,7 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 - Using `invocation.getMock().method()`: Invoking a method on a mock object.
 
 ### 11. Capturing Arguments
+- Using `@Captor`: Annotating a field to capture arguments.
 - Using `ArgumentCaptor<T>`: Captures arguments passed to a method.
 - Using `verify(mock).method(captor.capture())`: Extracts captured arguments for validation.
 - Using `captor.getAllValues()`: Retrieves all captured values.

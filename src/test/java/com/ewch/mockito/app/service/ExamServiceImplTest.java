@@ -6,6 +6,8 @@ import com.ewch.mockito.app.repository.QuestionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -45,6 +47,9 @@ class ExamServiceImplTest {
 
     @Mock
     private QuestionRepository questionRepository;
+
+    @Captor
+    ArgumentCaptor<Long> argumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -239,6 +244,25 @@ class ExamServiceImplTest {
         assertAll(
                 () -> verify(examRepository).findAllExams(),
                 () -> verify(questionRepository).findQuestionsByExamId(argThat(new ArgumentMatcher()))
+        );
+    }
+
+    @Test
+    void argumentCaptorTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+
+        // When
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+        //ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
+
+        // Then
+        assertAll(
+                () -> assertNotNull(actual),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(argumentCaptor.capture()),
+                () -> assertEquals(exam.getId(), argumentCaptor.getValue())
         );
     }
 
