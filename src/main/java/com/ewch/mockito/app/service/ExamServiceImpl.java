@@ -38,7 +38,7 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public Exam save(Exam exam) {
         if (!exam.getQuestions().isEmpty()) {
-            questionRepository.save(exam.getQuestions());
+            questionRepository.saveQuestionList(exam.getQuestions());
         }
         return examRepository.save(exam);
     }

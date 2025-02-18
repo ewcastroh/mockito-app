@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -178,7 +179,7 @@ class ExamServiceImplTest {
                 () -> assertEquals(expectedExam.getId(), actual.getId()),
                 () -> assertEquals(expectedExam.getName(), actual.getName()),
                 () -> verify(examRepository).save(any(Exam.class)),
-                () -> verify(questionRepository).save(anyList())
+                () -> verify(questionRepository).saveQuestionList(anyList())
         );
     }
 
@@ -279,5 +280,16 @@ class ExamServiceImplTest {
         public String toString() {
             return "ArgumentMatcher{" + argument + "} is null or less than 0";
         }
+    }
+
+    @Test
+    void doThrowTest() {
+        // Given
+        Exam exam = Data.EXAM;
+        exam.setQuestions(Data.QUESTION_LIST);
+        doThrow(IllegalArgumentException.class).when(questionRepository).saveQuestionList(anyList());
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> examService.save(Data.EXAM))
+        );
     }
 }
