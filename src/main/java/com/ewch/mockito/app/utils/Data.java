@@ -1,4 +1,4 @@
-package com.ewch.mockito.app.service;
+package com.ewch.mockito.app.utils;
 
 import com.ewch.mockito.app.model.Exam;
 

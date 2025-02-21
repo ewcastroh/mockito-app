@@ -73,6 +73,7 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 ### 11. Answering Behavior
 - Using `Answer<T>`: Customizing behavior for method calls.
 - Using `doAnswer()`: Defining custom behavior for void methods.
+- Using `doCallRealMethod()`: Invoking the real method from a spy object.
 - Using `thenAnswer()`: Defining custom behavior for method calls.
 - Using `then()` with `thenReturn()`: Defining custom behavior for method calls.
 - Using `InvocationOnMock`: Extracting arguments from method calls.

@@ -2,7 +2,10 @@ package com.ewch.mockito.app.service;
 
 import com.ewch.mockito.app.model.Exam;
 import com.ewch.mockito.app.repository.ExamRepository;
+import com.ewch.mockito.app.repository.ExamRepositoryImpl;
 import com.ewch.mockito.app.repository.QuestionRepository;
+import com.ewch.mockito.app.repository.QuestionRepositoryImpl;
+import com.ewch.mockito.app.utils.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +36,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -45,10 +49,10 @@ class ExamServiceImplTest {
     private ExamServiceImpl examService;
 
     @Mock
-    private ExamRepository examRepository;
+    private ExamRepositoryImpl examRepository;
 
     @Mock
-    private QuestionRepository questionRepository;
+    private QuestionRepositoryImpl questionRepository;
 
     @Captor
     ArgumentCaptor<Long> argumentCaptor;
@@ -342,6 +346,29 @@ class ExamServiceImplTest {
                 () -> assertEquals(expectedExam.getName(), actual.getName()),
                 () -> verify(examRepository).save(any(Exam.class)),
                 () -> verify(questionRepository).saveQuestionList(anyList())
+        );
+    }
+
+    @Test
+    void doCallRealMethodTest() {
+        // Given
+        Exam exam = new Exam(5L, "Math");
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        // when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+        doCallRealMethod().when(questionRepository).findQuestionsByExamId(anyLong());
+
+        // When
+        Exam actual = examService.findExamByNameWithQuestions(exam.getName());
+
+        // Then
+        assertAll(
+                () -> assertNotNull(actual),
+                () -> assertEquals(5, actual.getQuestions().size()),
+                () -> assertTrue(actual.getQuestions().contains("Arithmetic")),
+                () -> assertEquals(5L, actual.getId()),
+                () -> assertEquals("Math", actual.getName()),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(anyLong())
         );
     }
 }
