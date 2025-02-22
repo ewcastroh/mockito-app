@@ -37,7 +37,17 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 ### 3. Verifying Interactions
 - Using `verify(mock).method()`: Ensures a method was called on a mock object.
 - Using `verify(mock, times(n))`: Confirms a method was called a specific number of times.
+- Using `verifyNoInteractions(mock)`: Ensures no method calls were made. 
 - Using `verifyNoMoreInteractions(mock)`: Ensures no unexpected method calls.
+- Using `verifyZeroInteractions(mock)`: Ensures no method calls were made.
+- Using `verify(mock, never()).method()`: Ensures a method was never called.
+- Using `verify(mock, atLeast(n)).method()`: Ensures a method was called at least n times.
+- Using `verify(mock, atLeastOnce()).method()`: Ensures a method was called at least once.
+- Using `verify(mock, atMost(n)).method()`: Ensures a method was called at most n times.
+- Using `verify(mock, atMostOnce(n)).method()`: Ensures a method was called at most once.
+- Using `verify(mock, timeout(n)).method()`: Ensures a method was called within n milliseconds.
+- Using `verify(mock, timeout(n).times(m)).method()`: Ensures a method was called within n milliseconds m times.
+- Using `verify(mock, timeout(n).atLeast(m)).method()`: Ensures a method was called within n milliseconds at least m times.
 
 ### 4. Argument Matchers
 - Using `eq()`, `any()`, `argThat()`: Validating method arguments during verification.

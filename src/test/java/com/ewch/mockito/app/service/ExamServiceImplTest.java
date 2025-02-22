@@ -35,29 +35,33 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.atMost;
+import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
 
-    @InjectMocks
-    private ExamServiceImpl examService;
-
-    @Mock
-    private ExamRepositoryImpl examRepository;
-
-    @Mock
-    private QuestionRepositoryImpl questionRepository;
-
     @Captor
     ArgumentCaptor<Long> argumentCaptor;
+    @InjectMocks
+    private ExamServiceImpl examService;
+    @Mock
+    private ExamRepositoryImpl examRepository;
+    @Mock
+    private QuestionRepositoryImpl questionRepository;
 
     @BeforeEach
     void setUp() {
@@ -169,6 +173,7 @@ class ExamServiceImplTest {
 
         when(examRepository.save(any(Exam.class))).then(new Answer<Exam>() {
             Long sequence = 8L;
+
             @Override
             public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Exam exam = invocationOnMock.getArgument(0);
@@ -274,21 +279,6 @@ class ExamServiceImplTest {
         );
     }
 
-    static class ArgumentMatcher implements org.mockito.ArgumentMatcher<Long> {
-        private Long argument;
-
-        @Override
-        public boolean matches(Long argument) {
-            this.argument = argument;
-            return argument != null && argument > 0;
-        }
-
-        @Override
-        public String toString() {
-            return "ArgumentMatcher{" + argument + "} is null or less than 0";
-        }
-    }
-
     @Test
     void doThrowTest() {
         // Given
@@ -321,7 +311,6 @@ class ExamServiceImplTest {
         );
     }
 
-
     @Test
     void saveExamUsingDoAnswerTest() {
         // Given
@@ -330,6 +319,7 @@ class ExamServiceImplTest {
 
         doAnswer(new Answer<Exam>() {
             Long sequence = 8L;
+
             @Override
             public Exam answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Exam exam = invocationOnMock.getArgument(0);
@@ -426,5 +416,50 @@ class ExamServiceImplTest {
                 () -> inOrder.verify(examRepository).findAllExams(),
                 () -> inOrder.verify(questionRepository).findQuestionsByExamId(6L)
         );
+    }
+
+    @Test
+    void numberOfInvocationsTest() {
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        examService.findExamByNameWithQuestions("Math");
+        examService.findExamByNameWithQuestions("Math");
+        examService.findExamByName("Math");
+
+        assertAll(
+                () -> verify(examRepository, times(3)).findAllExams(),
+                () -> verify(questionRepository, times(2)).findQuestionsByExamId(5L),
+                () -> verify(questionRepository, atLeast(1)).findQuestionsByExamId(5L),
+                () -> verify(questionRepository, atLeastOnce()).findQuestionsByExamId(5L),
+                () -> verify(questionRepository, atMost(10)).findQuestionsByExamId(5L),
+                // () -> verify(questionRepository, atMostOnce()).findQuestionsByExamId(5L),
+                () -> verify(questionRepository, times(0)).findQuestionsByExamId(6L)
+        );
+    }
+
+    @Test
+    void numberOfInvocationsTest2() {
+        when(examRepository.findAllExams()).thenReturn(Collections.emptyList());
+        examService.findExamByNameWithQuestions("Math");
+
+        assertAll(
+                () -> verify(questionRepository, never()).findQuestionsByExamId(5L),
+                () -> verifyNoInteractions(questionRepository),
+                () -> verify(examRepository, times(1)).findAllExams()
+        );
+    }
+
+    static class ArgumentMatcher implements org.mockito.ArgumentMatcher<Long> {
+        private Long argument;
+
+        @Override
+        public boolean matches(Long argument) {
+            this.argument = argument;
+            return argument != null && argument > 0;
+        }
+
+        @Override
+        public String toString() {
+            return "ArgumentMatcher{" + argument + "} is null or less than 0";
+        }
     }
 }
