@@ -52,6 +52,13 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 ### 6. Spying on Real Objects
 - Using `spy(Class<T> classToSpyOn)`: Wraps real objects to partially mock behavior.
 - Overriding specific method calls while retaining real method execution.
+- Using `doReturn().when(spy).method()`: Customizing behavior for specific methods.
+- Using `doCallRealMethod().when(spy).method()`: Invoking the real method from a spy object.
+- Using `doNothing().when(spy).voidMethod()`: Preventing actual execution of void methods.
+- Using `doThrow().when(spy).voidMethod()`: Forcing exceptions in void methods.
+- Using `doAnswer().when(spy).method()`: Defining custom behavior for method calls.
+- Using `@Spy`: Annotating a field to spy on real objects.
+- Using `@Spy` with `@InjectMocks`: Spying on real objects and injecting mocks.
 
 ### 7. Resetting Mocks
 - Using `reset(mock)`: Clears all previous interactions.
@@ -81,7 +88,6 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 - Using `invocation.getArguments()`: Extracting all arguments from method calls.
 - Using `invocation.getMock()`: Extracting the mock object from method calls.
 - Using `invocation.getMethod()`: Extracting the method from method calls.
-- Using `invocation.callRealMethod()`: Invoking the real method from a spy object.
 - Using `invocation.getMock().method()`: Invoking a method on a mock object.
 
 ### 11. Capturing Arguments

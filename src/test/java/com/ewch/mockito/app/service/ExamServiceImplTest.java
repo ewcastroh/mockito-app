@@ -37,8 +37,10 @@ import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -367,6 +369,30 @@ class ExamServiceImplTest {
                 () -> assertTrue(actual.getQuestions().contains("Arithmetic")),
                 () -> assertEquals(5L, actual.getId()),
                 () -> assertEquals("Math", actual.getName()),
+                () -> verify(examRepository).findAllExams(),
+                () -> verify(questionRepository).findQuestionsByExamId(anyLong())
+        );
+    }
+
+    @Test
+    void spyTest() {
+        ExamRepository examRepository = spy(ExamRepositoryImpl.class);
+        QuestionRepository questionRepository = spy(QuestionRepositoryImpl.class);
+        ExamService examService = new ExamServiceImpl(examRepository, questionRepository);
+
+        //when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTION_LIST);
+        // when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        doReturn(Data.QUESTION_LIST).when(questionRepository).findQuestionsByExamId(anyLong());
+
+        Exam exam = examService.findExamByNameWithQuestions("Math");
+
+        assertAll(
+                () -> assertNotNull(exam),
+                () -> assertEquals(5L, exam.getId()),
+                () -> assertEquals("Math", exam.getName()),
+                () -> assertEquals(5, exam.getQuestions().size()),
+                () -> assertTrue(exam.getQuestions().contains("Arithmetic")),
+
                 () -> verify(examRepository).findAllExams(),
                 () -> verify(questionRepository).findQuestionsByExamId(anyLong())
         );
