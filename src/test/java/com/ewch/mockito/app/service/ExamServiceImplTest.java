@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -33,13 +34,12 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -395,6 +395,36 @@ class ExamServiceImplTest {
 
                 () -> verify(examRepository).findAllExams(),
                 () -> verify(questionRepository).findQuestionsByExamId(anyLong())
+        );
+    }
+
+    @Test
+    void orderInvocationTest() {
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        examService.findExamByNameWithQuestions("Math");
+        examService.findExamByNameWithQuestions("Language");
+
+        InOrder inOrder = inOrder(questionRepository);
+
+        assertAll(
+                () -> inOrder.verify(questionRepository).findQuestionsByExamId(5L),
+                () -> inOrder.verify(questionRepository).findQuestionsByExamId(6L)
+        );
+    }
+
+    @Test
+    void orderInvocationTest2() {
+        when(examRepository.findAllExams()).thenReturn(Data.EXAM_LIST);
+        examService.findExamByNameWithQuestions("Math");
+        examService.findExamByNameWithQuestions("Language");
+
+        InOrder inOrder = inOrder(examRepository, questionRepository);
+
+        assertAll(
+                () -> inOrder.verify(examRepository).findAllExams(),
+                () -> inOrder.verify(questionRepository).findQuestionsByExamId(5L),
+                () -> inOrder.verify(examRepository).findAllExams(),
+                () -> inOrder.verify(questionRepository).findQuestionsByExamId(6L)
         );
     }
 }

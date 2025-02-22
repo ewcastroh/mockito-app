@@ -101,6 +101,10 @@ This project is dedicated to learning and implementing Mockito, a popular Java m
 - Using `captor.capture()` with `verify(mock).method(captor.capture())`: Captures arguments for verification.
 - Using `captor.capture()` with `verify(mock, times(n)).method(captor.capture())`: Captures arguments for verification.
 
+### 12. InOrder Verification
+- Using `InOrder`: Verifying method calls in a specific order.
+- Using `inOrder.verify(mock1).method1()`: Ensures method1 was called before method2.
+
 ## Running the Tests
 
 To execute the tests, use the following Maven command:
